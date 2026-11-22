@@ -52,6 +52,7 @@ h1 .zh{color:var(--coral-deep);font-family:"Noto Sans TC",sans-serif;font-weight
 .card b{font:600 1.3rem/1.2 var(--display)}
 .card span{font-family:"Noto Sans TC",sans-serif;color:var(--muted);font-weight:500}
 .c1 .ic{background:#FBE3D9}.c2 .ic{background:#D3E7F3}.c3 .ic{background:#DCEBD5}
+.c4 .ic{background:#FAE7C6}.c5 .ic{background:#E9DFF2}.c6 .ic{background:#D8EFE8}
 
 .bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .back{border:2px solid var(--line);background:var(--paper);border-radius:16px;padding:6px 14px;font-weight:600;font-size:1rem;line-height:1.15}
@@ -98,6 +99,29 @@ h1 .zh{color:var(--coral-deep);font-family:"Noto Sans TC",sans-serif;font-weight
 .piece svg,.hole svg{width:100%;height:100%;display:block}
 @keyframes pop{50%{transform:scale(1.15)}}
 
+/* Dot-to-dot */
+#dotPic .dot{cursor:pointer}
+#dotPic .dot-n{font:600 15px var(--display);fill:var(--muted);pointer-events:none}
+#dotPic .next circle{stroke:var(--coral-deep);animation:blink 1.1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.4}}
+
+/* Sticker scene */
+.scene{position:relative;width:100%;max-width:460px;aspect-ratio:4/3;margin:0 auto;border-radius:18px;overflow:hidden;border:2px solid var(--line);touch-action:manipulation;cursor:pointer}
+.scene svg{position:absolute;inset:0;width:100%;height:100%}
+.scene .sk{position:absolute;transform:translate(-50%,-50%);font-size:clamp(26px,7vw,38px);line-height:1;pointer-events:none;animation:stick .3s}
+@keyframes stick{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}}
+
+/* Color sorting */
+.bins{display:grid;grid-template-columns:repeat(auto-fit,96px);justify-content:center;gap:14px;width:100%}
+.bin{width:96px;min-height:96px;border:3px dashed;border-radius:18px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4px;padding:8px}
+.bin.hit{animation:pop .4s}
+.bin svg{width:28px;height:28px;display:block}
+#sortTray{grid-template-columns:repeat(auto-fit,72px)}
+.chip{width:72px;height:72px;touch-action:none;cursor:grab;border:0;background:none;position:relative;z-index:1}
+.chip.drag{z-index:20;cursor:grabbing;filter:drop-shadow(0 8px 8px rgba(74,59,48,.25))}
+.chip.home{transition:transform .3s}
+.chip svg{width:100%;height:100%;display:block}
+
 .again{display:block;margin:14px auto 0;border:0;background:var(--sage-deep);color:#fff;border-radius:18px;padding:12px 26px;font-size:1.2rem;font-weight:600;box-shadow:0 4px 0 #5E8752;line-height:1.15}
 .again small{display:block;font-family:"Noto Sans TC",sans-serif;font-size:.8rem;opacity:.9}
 
@@ -133,6 +157,9 @@ h1 .zh{color:var(--coral-deep);font-family:"Noto Sans TC",sans-serif;font-weight
     <button class="card c1" data-go="color"><div class="ic">🖍️</div><b>Coloring Book</b><span>著色本</span></button>
     <button class="card c2" data-go="memory"><div class="ic">🃏</div><b>Memory Match</b><span>記憶翻翻樂</span></button>
     <button class="card c3" data-go="shapes"><div class="ic">🔺</div><b>Shape Sorter</b><span>形狀配對</span></button>
+    <button class="card c4" data-go="dots"><div class="ic">⭐</div><b>Dot-to-Dot</b><span>連連看</span></button>
+    <button class="card c5" data-go="stick"><div class="ic">🌈</div><b>Sticker Scene</b><span>貼紙樂園</span></button>
+    <button class="card c6" data-go="sort"><div class="ic">🧺</div><b>Color Sorting</b><span>顏色分類</span></button>
   </section>
 
   <!-- Coloring -->
@@ -186,6 +213,56 @@ h1 .zh{color:var(--coral-deep);font-family:"Noto Sans TC",sans-serif;font-weight
       <div class="burst" id="burstS"></div>
     </div>
   </section>
+  <!-- Dot to dot -->
+  <section id="dots" hidden>
+    <div class="bar">
+      <button class="back" data-go="menu">← Games<small>選遊戲</small></button>
+      <h2>Dot-to-Dot<small>連連看</small></h2>
+    </div>
+    <div class="panel">
+      <p class="say-line" id="dotLine"></p>
+      <svg class="pic" id="dotPic" viewBox="0 0 300 300" aria-label="Dot to dot picture"></svg>
+      <div class="tools" id="dotPicks" role="group" aria-label="Pictures"></div>
+      <div class="burst" id="burstD"></div>
+    </div>
+  </section>
+
+  <!-- Sticker scene -->
+  <section id="stick" hidden>
+    <div class="bar">
+      <button class="back" data-go="menu">← Games<small>選遊戲</small></button>
+      <h2>Sticker Scene<small>貼紙樂園</small></h2>
+      <div class="seg" id="sceneSeg" role="group" aria-label="Scene">
+        <button data-v="garden">🌳</button><button data-v="sea">🌊</button>
+      </div>
+    </div>
+    <div class="panel">
+      <p class="say-line" id="stickLine"></p>
+      <div class="scene" id="scene"></div>
+      <div class="tools" id="stickers" role="group" aria-label="Stickers"></div>
+      <div class="burst" id="burstK"></div>
+    </div>
+  </section>
+
+  <!-- Color sorting -->
+  <section id="sort" hidden>
+    <div class="bar">
+      <button class="back" data-go="menu">← Games<small>選遊戲</small></button>
+      <h2>Color Sorting<small>顏色分類</small></h2>
+      <div class="seg" id="sortSeg" role="group" aria-label="Number of colors">
+        <button data-v="3">3</button><button data-v="4">4</button>
+      </div>
+    </div>
+    <div class="panel">
+      <p class="say-line" id="sortLine"></p>
+      <div class="board">
+        <div class="bins" id="bins"></div>
+        <div class="tray" id="sortTray"></div>
+      </div>
+      <button class="again" id="sortAgain" hidden>Play again<small>再玩一次</small></button>
+      <div class="burst" id="burstR"></div>
+    </div>
+  </section>
 </main>
 
 <footer>Made with <span class="heart">♥</span> for little learners · 用心陪伴每一個孩子成長</footer>
@@ -195,8 +272,8 @@ const $=s=>document.querySelector(s);
 const SPEAKER='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 const MUTED='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const st=Object.assign({lang:'en',sound:true,pairs:3,shapes:3},store.get('hbd.play',{}));
-const save=()=>store.set('hbd.play',{lang:st.lang,sound:st.sound,pairs:st.pairs,shapes:st.shapes});
+const st=Object.assign({lang:'en',sound:true,pairs:3,shapes:3,scene:'garden',sortN:3},store.get('hbd.play',{}));
+const save=()=>store.set('hbd.play',{lang:st.lang,sound:st.sound,pairs:st.pairs,shapes:st.shapes,scene:st.scene,sortN:st.sortN});
 const L=(en,zh)=>st.lang==='zh'?zh:en;
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
@@ -209,17 +286,21 @@ function burst(id){const b=$(id);b.innerHTML='';
 
 /* ---------- Navigation & language ---------- */
 let view='menu';
-function go(v){view=v;['menu','color','memory','shapes'].forEach(id=>$('#'+id).hidden=id!==v);
+function go(v){view=v;['menu','color','memory','shapes','dots','stick','sort'].forEach(id=>$('#'+id).hidden=id!==v);
   if(v==='color')startColor();if(v==='memory')startMemory();if(v==='shapes')startShapes();
+  if(v==='dots')startDots();if(v==='stick')startStick();if(v==='sort')startSort();
   window.scrollTo({top:0})}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){go(b.dataset.go);
-  const names={color:L('Coloring book','著色本'),memory:L('Memory match','記憶翻翻樂'),shapes:L('Shape sorter','形狀配對')};
+  const names={color:L('Coloring book','著色本'),memory:L('Memory match','記憶翻翻樂'),shapes:L('Shape sorter','形狀配對'),
+    dots:L('Dot to dot','連連看'),stick:L('Sticker scene','貼紙樂園'),sort:L('Color sorting','顏色分類')};
   if(names[b.dataset.go])say(names[b.dataset.go])}});
 function syncBar(){
   document.querySelectorAll('#langSeg button[data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===st.lang));
   $('#sound').innerHTML=st.sound?SPEAKER:MUTED;$('#sound').setAttribute('aria-pressed',st.sound);
   document.querySelectorAll('#pairSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===st.pairs));
   document.querySelectorAll('#shapeSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===st.shapes));
+  document.querySelectorAll('#sceneSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===st.scene));
+  document.querySelectorAll('#sortSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===st.sortN));
   document.documentElement.lang=st.lang==='zh'?'zh-Hant':'en';}
 $('#langSeg').addEventListener('click',e=>{const b=e.target.closest('button[data-v]');if(!b)return;st.lang=b.dataset.v;save();syncBar();refreshLines()});
 $('#sound').onclick=()=>{st.sound=!st.sound;save();syncBar();if(!st.sound)try{speechSynthesis.cancel()}catch(e){}};
@@ -327,33 +408,145 @@ function startShapes(){
   $('#holes').innerHTML=shuffle(use.slice()).map(k=>`<div class="hole" data-k="${k}">${shapeSvg(k,'none',true)}</div>`).join('');
   $('#tray').innerHTML=shuffle(use.slice()).map(k=>`<button class="piece home" data-k="${k}" aria-label="${SH[k].en}">${shapeSvg(k,SH[k].color)}</button>`).join('');
   sorter.left=use.length;$('#shapeAgain').hidden=true;$('#tray').hidden=false;refreshLines();
-  document.querySelectorAll('.piece').forEach(bindDrag)}
-function bindDrag(p){
+  document.querySelectorAll('#tray .piece').forEach(p=>bindDrag(p,shapeDrag))}
+const shapeDrag={targets:'.hole',
+  grab:p=>say(L(SH[p.dataset.k].en,SH[p.dataset.k].zh)),
+  accept:(h,p)=>!h.dataset.done&&h.dataset.k===p.dataset.k,
+  drop:(h,p)=>{const k=p.dataset.k;
+    h.dataset.done=1;h.innerHTML=shapeSvg(k,SH[k].color);h.classList.add('hit');
+    p.style.visibility='hidden';p.style.transform='';p.disabled=true;sorter.left--;
+    if(!sorter.left){burst('#burstS');$('#tray').hidden=true;$('#shapeAgain').hidden=false;$('#shapeLine').textContent=L('All sorted! 🎉','全部放好了！🎉');
+      say(L('Hooray! You sorted all the shapes!','太棒了！形狀都放好了！'))}
+    else say(L('Yes! '+SH[k].en,'對了！'+SH[k].zh))},
+  miss:()=>say(L('Try another hole','換一個洞試試看'))};
+/* Shared drag: o={targets,grab,accept,drop,miss} */
+function bindDrag(p,o){
   let sx=0,sy=0,dx=0,dy=0,r0=null,moved=false,id=null;
   p.addEventListener('pointerdown',e=>{id=e.pointerId;p.setPointerCapture(id);sx=e.clientX;sy=e.clientY;dx=dy=0;r0=p.getBoundingClientRect();moved=false;
-    p.classList.remove('home');p.classList.add('drag');const k=p.dataset.k;say(L(SH[k].en,SH[k].zh))});
+    p.classList.remove('home');p.classList.add('drag');o.grab(p)});
   p.addEventListener('pointermove',e=>{if(e.pointerId!==id)return;dx=e.clientX-sx;dy=e.clientY-sy;if(Math.hypot(dx,dy)>4)moved=true;
     p.style.transform=`translate(${dx}px,${dy}px) scale(1.08)`});
   const end=e=>{if(e.pointerId!==id)return;id=null;p.classList.remove('drag');
     const cx=r0.left+r0.width/2+dx,cy=r0.top+r0.height/2+dy;
-    let hit=null;document.querySelectorAll('.hole').forEach(h=>{const q=h.getBoundingClientRect();
+    let hit=null;document.querySelectorAll(o.targets).forEach(h=>{const q=h.getBoundingClientRect();
       if(Math.hypot(cx-(q.left+q.width/2),cy-(q.top+q.height/2))<q.width*.6)hit=h});
-    if(hit&&!hit.dataset.done&&hit.dataset.k===p.dataset.k){
-      hit.dataset.done=1;hit.innerHTML=shapeSvg(p.dataset.k,SH[p.dataset.k].color);hit.classList.add('hit');
-      p.style.visibility='hidden';p.style.transform='';p.disabled=true;sorter.left--;
-      if(!sorter.left){burst('#burstS');$('#tray').hidden=true;$('#shapeAgain').hidden=false;$('#shapeLine').textContent=L('All sorted! 🎉','全部放好了！🎉');
-        say(L('Hooray! You sorted all the shapes!','太棒了！形狀都放好了！'))}
-      else say(L('Yes! '+SH[p.dataset.k].en,'對了！'+SH[p.dataset.k].zh))}
-    else{if(hit&&moved)say(L('Try another hole','換一個洞試試看'));p.classList.add('home');p.style.transform=''}};
+    if(hit&&o.accept(hit,p))o.drop(hit,p);
+    else{if(hit&&moved)o.miss();p.classList.add('home');p.style.transform=''}};
   p.addEventListener('pointerup',end);p.addEventListener('pointercancel',end)}
 $('#shapeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.shapes=+b.dataset.v;save();syncBar();startShapes()});
 $('#shapeAgain').onclick=startShapes;
+
+/* ---------- Dot to dot ---------- */
+const DOTS={
+ house:{icon:'🏠',en:'house',zh:'房子',color:'#F0997F',pts:[[60,250],[60,150],[150,60],[240,150],[240,250]]},
+ tree:{icon:'🌳',en:'tree',zh:'大樹',color:'#7CC45E',pts:[[120,255],[120,190],[60,190],[150,60],[240,190],[180,190],[180,255]]},
+ fish:{icon:'🐟',en:'fish',zh:'小魚',color:'#4FA3E0',pts:[[80,150],[130,95],[190,105],[235,135],[285,90],[285,210],[235,165],[190,195],[130,205]]},
+ star:{icon:'⭐',en:'star',zh:'星星',color:'#F4C95D',pts:[[150,18],[183,114],[285,114],[201,174],[234,276],[150,213],[66,276],[99,174],[15,114],[117,114]]}
+};
+let dot={pic:'house',n:0,done:false};
+function startDots(){
+  $('#dotPicks').innerHTML=Object.entries(DOTS).map(([k,p])=>`<button data-d="${k}" aria-label="${p.en}">${p.icon}</button>`).join('')+
+    `<button class="txt" id="dotClear">🧽 Clear · 清除</button>`;
+  loadDots(dot.pic)}
+function loadDots(k){dot={pic:k,n:0,done:false};drawDots();
+  document.querySelectorAll('#dotPicks button[data-d]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.d===k));
+  refreshLines()}
+function drawDots(){
+  const p=DOTS[dot.pic];
+  $('#dotPic').innerHTML=dot.done
+    ?`<polygon points="${p.pts.map(q=>q.join(' ')).join(' ')}" fill="${p.color}" stroke="#4A3B30" stroke-width="5" stroke-linejoin="round"/>`
+    :`<polyline points="${p.pts.slice(0,dot.n).map(q=>q.join(' ')).join(' ')}" fill="none" stroke="#4A3B30" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`+
+     p.pts.map((q,i)=>`<g class="dot${i===dot.n?' next':''}" data-i="${i}">`+
+       `<circle cx="${q[0]}" cy="${q[1]}" r="12" fill="${i<dot.n?p.color:'#FFFDF8'}" stroke="#4A3B30" stroke-width="3"/>`+
+       `<text class="dot-n" x="${q[0]}" y="${q[1]+5}" text-anchor="middle">${i+1}</text></g>`).join('')}
+$('#dotPicks').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.id==='dotClear'){loadDots(dot.pic);return}
+  loadDots(b.dataset.d);const p=DOTS[b.dataset.d];say(L('Connect the dots to make a '+p.en,'把點連起來，畫出'+p.zh))});
+$('#dotPic').addEventListener('click',e=>{const g=e.target.closest('.dot');if(!g||dot.done)return;
+  const i=+g.dataset.i;
+  if(i!==dot.n){say(L('Find number '+(dot.n+1),'找數字 '+(dot.n+1)));return}
+  dot.n++;say(String(dot.n));
+  const p=DOTS[dot.pic];
+  if(dot.n===p.pts.length){dot.done=true;drawDots();burst('#burstD');
+    $('#dotLine').textContent=L('You did it! 🎉','完成了！🎉');say(L('You made a '+p.en+'!','你畫出'+p.zh+'了！'))}
+  else drawDots()});
+
+/* ---------- Sticker scene ---------- */
+const SCENES={
+ garden:{en:'garden',zh:'花園',
+  svg:`<svg viewBox="0 0 400 300" aria-hidden="true"><rect width="400" height="300" fill="#D9EEF8"/>`+
+   `<circle cx="338" cy="54" r="30" fill="#F4C95D"/>`+
+   `<path d="M0 206 Q100 162 200 202 Q300 242 400 194 L400 300 L0 300 Z" fill="#9BBE8E"/>`+
+   `<path d="M0 252 Q120 238 240 252 Q320 262 400 250 L400 300 L0 300 Z" fill="#7CA36E"/>`+
+   `<rect x="60" y="150" width="16" height="72" fill="#9A6A45"/><circle cx="68" cy="140" r="40" fill="#7CA36E"/>`+
+   `<ellipse cx="300" cy="272" rx="56" ry="16" fill="#A8CBE0"/></svg>`,
+  stickers:[['🌻','sunflower','向日葵'],['🦋','butterfly','蝴蝶'],['🐰','rabbit','兔子'],['🐞','ladybug','瓢蟲'],
+   ['🌸','blossom','花朵'],['🐝','bee','蜜蜂'],['🦆','duck','鴨子'],['🍎','apple','蘋果']]},
+ sea:{en:'sea',zh:'海洋',
+  svg:`<svg viewBox="0 0 400 300" aria-hidden="true"><rect width="400" height="300" fill="#A8CBE0"/>`+
+   `<rect width="400" height="86" fill="#C7E2F0"/>`+
+   `<path d="M0 86 Q50 72 100 86 T200 86 T300 86 T400 86 L400 98 L0 98 Z" fill="#8FBBD6"/>`+
+   `<path d="M0 256 Q100 244 200 256 Q300 268 400 254 L400 300 L0 300 Z" fill="#F1DFBC"/>`+
+   `<path d="M72 258 Q56 214 80 186 Q66 228 88 258 Z" fill="#7CA36E"/>`+
+   `<path d="M332 258 Q318 216 340 190 Q326 230 348 258 Z" fill="#7CA36E"/>`+
+   `<circle cx="150" cy="150" r="7" fill="#CFE6F2"/><circle cx="174" cy="122" r="5" fill="#CFE6F2"/></svg>`,
+  stickers:[['🐠','fish','小魚'],['🐙','octopus','章魚'],['🐢','turtle','烏龜'],['⭐','starfish','海星'],
+   ['🐳','whale','鯨魚'],['🦀','crab','螃蟹'],['🐚','shell','貝殼'],['🐬','dolphin','海豚']]}
+};
+let stick={scene:'garden',pick:0,items:[],cheered:false};
+function startStick(){
+  const s=SCENES[st.scene];
+  $('#scene').innerHTML=s.svg;
+  $('#stickers').innerHTML=s.stickers.map((x,i)=>`<button data-s="${i}" aria-label="${x[1]}">${x[0]}</button>`).join('')+
+    `<button class="txt" id="stickUndo">↩ Undo · 退回</button><button class="txt" id="stickClear">🧽 Clear · 清除</button>`;
+  stick={scene:st.scene,pick:0,items:[],cheered:false};syncStick();refreshLines()}
+function syncStick(){document.querySelectorAll('#stickers button[data-s]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===stick.pick))}
+$('#stickers').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.id==='stickUndo'){const el=stick.items.pop();if(el)el.remove();return}
+  if(b.id==='stickClear'){stick.items.forEach(el=>el.remove());stick.items=[];stick.cheered=false;refreshLines();return}
+  stick.pick=+b.dataset.s;syncStick();const s=SCENES[stick.scene].stickers[stick.pick];say(L(s[1],s[2]))});
+$('#scene').addEventListener('click',e=>{
+  const r=$('#scene').getBoundingClientRect(),s=SCENES[stick.scene].stickers[stick.pick];
+  const el=document.createElement('span');el.className='sk';el.textContent=s[0];
+  el.style.left=(e.clientX-r.left)/r.width*100+'%';el.style.top=(e.clientY-r.top)/r.height*100+'%';
+  $('#scene').appendChild(el);stick.items.push(el);say(L(s[1],s[2]));
+  if(!stick.cheered&&stick.items.length>=6){stick.cheered=true;burst('#burstK');
+    $('#stickLine').textContent=L('What a lovely scene! 🎉','好美的風景！🎉');say(L('What a lovely scene!','好美的風景！'))}});
+$('#sceneSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.scene=b.dataset.v;save();syncBar();startStick();
+  say(L(SCENES[st.scene].en,SCENES[st.scene].zh))});
+
+/* ---------- Color sorting ---------- */
+const SORT_C=[0,4,2,3];
+let sortG={left:0};
+function startSort(){
+  const use=SORT_C.slice(0,st.sortN),kinds=Object.keys(SH),items=[];
+  use.forEach(ci=>shuffle(kinds.slice()).slice(0,2).forEach(k=>items.push({c:ci,k})));
+  $('#bins').innerHTML=shuffle(use.slice()).map(ci=>`<div class="bin" data-c="${ci}" style="border-color:${COLORS[ci][0]};background:${COLORS[ci][0]}1A" aria-label="${COLORS[ci][1]} basket"></div>`).join('');
+  $('#sortTray').innerHTML=shuffle(items).map(it=>`<button class="chip home" data-c="${it.c}" data-k="${it.k}" aria-label="${COLORS[it.c][1]} ${SH[it.k].en}">${shapeSvg(it.k,COLORS[it.c][0])}</button>`).join('');
+  sortG.left=items.length;$('#sortAgain').hidden=true;$('#sortTray').hidden=false;refreshLines();
+  document.querySelectorAll('#sortTray .chip').forEach(p=>bindDrag(p,sortDrag))}
+const sortDrag={targets:'.bin',
+  grab:p=>{const c=COLORS[+p.dataset.c];say(L(c[1],c[2]))},
+  accept:(b,p)=>b.dataset.c===p.dataset.c,
+  drop:(b,p)=>{const c=COLORS[+p.dataset.c];
+    b.insertAdjacentHTML('beforeend',shapeSvg(p.dataset.k,c[0]));
+    b.classList.add('hit');setTimeout(()=>b.classList.remove('hit'),420);
+    p.style.visibility='hidden';p.style.transform='';p.disabled=true;sortG.left--;
+    if(!sortG.left){burst('#burstR');$('#sortTray').hidden=true;$('#sortAgain').hidden=false;$('#sortLine').textContent=L('All sorted! 🎉','全部分好了！🎉');
+      say(L('Wonderful! Every color is in its basket!','太棒了！顏色都分好了！'))}
+    else say(L('Yes! '+c[1],'對了！'+c[2]))},
+  miss:()=>say(L('Try another basket','換一個籃子試試看'))};
+$('#sortSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;st.sortN=+b.dataset.v;save();syncBar();startSort()});
+$('#sortAgain').onclick=startSort;
 
 /* ---------- Instruction lines ---------- */
 function refreshLines(){
   $('#colorLine').textContent=L('Pick a color, then tap the picture','選一個顏色，再點圖畫塗上去');
   if(mem.found<st.pairs)$('#memLine').textContent=L('Flip two cards to find a match','翻兩張牌，找一樣的');
-  if(sorter.left)$('#shapeLine').textContent=L('Drag each shape into its hole','把形狀拖到一樣的洞裡')}
+  if(sorter.left)$('#shapeLine').textContent=L('Drag each shape into its hole','把形狀拖到一樣的洞裡');
+  if(!dot.done)$('#dotLine').textContent=L('Tap the dots in order: 1, 2, 3…','照順序點數字：1、2、3…');
+  if(!stick.cheered)$('#stickLine').textContent=L('Pick a sticker, then tap the picture','選一張貼紙，再點圖畫貼上去');
+  if(sortG.left)$('#sortLine').textContent=L('Drag each shape to the basket of the same color','把形狀拖到一樣顏色的籃子')}
 
 syncBar();refreshLines();
 </script>
